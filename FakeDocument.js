@@ -1,17 +1,6 @@
 import FakeElement from './FakeElement.js'
 
 class FakeDocument {
-  #findElement(elem, tagName) {
-    if(elem.tagName === tagName) return elem
-    let elementFound = null;
-    for (let i = 0; i < elem.children.length; i++) {
-      elementFound = this.#findElement(elem.children[i], tagName)
-      if(elementFound) return elementFound
-      //if (this.#findElement(elem.children[i], tagName)) return this.#findElement(elem.children[i], tagName)
-    }
-    return elementFound
-  }
-
   constructor() {
     const html = new FakeElement('html')
     html.appendChild(new FakeElement('head'))
@@ -25,8 +14,8 @@ class FakeDocument {
   }
 
   querySelector(tagName) {
-    tagName = tagName.toUpperCase()
-    return this.#findElement(this.body.parentElement, tagName)
+    if(tagName.toUpperCase() === 'HTML') return this.children[0]
+    return this.children[0].querySelector(tagName)
   }
 
 }

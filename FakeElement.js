@@ -1,6 +1,16 @@
 import EventInterface from './EventInterface.js'
 
 class FakeElement extends EventInterface {
+  #findElement(elem, tagName) {
+    if(elem.tagName === tagName) return elem
+    let elementFound = null;
+    for (let i = 0; i < elem.children.length; i++) {
+      elementFound = this.#findElement(elem.children[i], tagName)
+      if(elementFound) break
+    }
+    return elementFound
+  }
+
   #bubble(path, data) {
     path.forEach(elem => 
       elem.dispatchEvent(
@@ -65,6 +75,16 @@ class FakeElement extends EventInterface {
     this.#bubble(bubblePath, eventData)
   }
 
+  querySelector(tagName) {
+    // look ot all the children of this element, but not the element itself
+    tagName = tagName.toUpperCase()
+    let elementFound = null
+    for(let i = 0; i < this.children.length; i++) {
+      elementFound = this.#findElement(this.children[i], tagName)
+      if(elementFound) break
+    }
+    return elementFound
+  }
 }
 
 export default FakeElement
