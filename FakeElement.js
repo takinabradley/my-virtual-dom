@@ -11,6 +11,16 @@ class FakeElement extends EventInterface {
     return elementFound
   }
 
+  #findElements(elem, tagName, list = []) {
+    if(elem.children.length === 0) return list
+    
+    for(let i = 0; i < elem.children.length; i++) {
+      if(elem.children[i].tagName === tagName) list.push(elem.children[i])
+      list = [...list, ...this.#findElements(elem.children[i], tagName)]
+    }
+    return list
+  }
+
   #bubble(path, data) {
     path.forEach(elem => 
       elem.dispatchEvent(
@@ -84,6 +94,10 @@ class FakeElement extends EventInterface {
       if(elementFound) break
     }
     return elementFound
+  }
+
+  getElementsByTagName(tagName) {
+    return this.#findElements(this, tagName.toUpperCase())
   }
 }
 

@@ -18,6 +18,14 @@ class FakeDocument {
     return this.children[0].querySelector(tagName)
   }
 
+  getElementsByTagName(tagName) {
+    if(tagName.toUpperCase() === 'HTML') {
+      return [this.children[0], ...this.children[0].getElementsByTagName(tagName)]
+    } else {
+      return this.children[0].getElementsByTagName(tagName)
+    }
+  }
+
 }
 
 export default FakeDocument
