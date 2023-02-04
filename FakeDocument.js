@@ -14,11 +14,13 @@ class FakeDocument {
   }
 
   querySelector(tagName) {
+    //query from html - html tag including
     if(tagName.toUpperCase() === 'HTML') return this.children[0]
     return this.children[0].querySelector(tagName)
   }
 
   getElementsByTagName(tagName) {
+    // query from html - html tag including
     if(tagName.toUpperCase() === 'HTML') {
       return [this.children[0], ...this.children[0].getElementsByTagName(tagName)]
     } else {
