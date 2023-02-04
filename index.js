@@ -1,34 +1,44 @@
 import FakeDocument from './FakeDocument.js'
+
+/* fakeDocument stuff */
 const fakeDocument = new FakeDocument()
-
-const p = fakeDocument.createElement('p')
-fakeDocument.body.appendChild(p)
-p.appendChild(fakeDocument.createElement('em'))
 const div = fakeDocument.createElement('div')
-div.appendChild(fakeDocument.createElement('section')).appendChild(fakeDocument.createElement('article'))
+const p = fakeDocument.createElement('p')
+const span = fakeDocument.createElement('span')
 fakeDocument.body.appendChild(div)
-fakeDocument.body.appendChild(fakeDocument.createElement('div'))
-console.log(div)
+div.appendChild(p)
+p.appendChild(span)
 
+function divBubbleHandler(e) {
+  console.log('grandparent click bubble')
+}
 
-const article = fakeDocument.querySelector('article')
-
-article.addEventListener('click', (e) => {
-  console.log('at target...', e)
-})
-
-article.parentElement.addEventListener('click', (e) => {
-  console.log('capturing...', e)
-}, true)
-article.parentElement.parentElement.addEventListener('click', (e) => {
-  console.log('capturing...', e)
+// capture listeners
+div.addEventListener('click', e => {
+  console.log('grandparent click capture')
 }, true)
 
-article.parentElement.addEventListener('click', (e) => {
-  console.log('bubbling...', e)
-})
-article.parentElement.parentElement.addEventListener('click', (e) => {
-  console.log('bubbling...', e)
+p.addEventListener('click', e => {
+  e.stopPropagation()                // stopped progogation here!
+  console.log('parent click capture')
+}, true)
+
+// target listeners
+span.addEventListener('click', e => {
+  console.log('click capture')
+}, true)
+
+span.addEventListener('click', e => {
+  console.log('click bubble')
 })
 
-article.click()
+// bubble listeners
+p.addEventListener('click', e => {
+  console.log('parent click bubble')
+})
+
+div.addEventListener('click', divBubbleHandler)
+div.removeEventListener('click', divBubbleHandler)
+
+// click 
+span.click()
