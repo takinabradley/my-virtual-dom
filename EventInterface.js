@@ -21,11 +21,20 @@ class EventInterface {
 
   dispatchEvent(eventName, data, phase = 'bubble') {
     if (typeof eventName !== "string") return;
+    const stopImmediatePropagation = () => {
+      data.stopPropagation()
+      stop = true
+    }
 
+    // only add this if original event had a stopPropogation method.
+    if(data.stopPropagation) data.stopImmediatePropagation = stopImmediatePropagation
+
+    let stop = false
     if (this.#events[phase][eventName]) {
-      this.#events[phase][eventName].forEach((callback) => {
-        callback(data);
-      });
+      for(let i = 0; i < this.#events[phase][eventName].length; i++) {
+        if(stop) break
+        this.#events[phase][eventName][i](data)
+      }
     }
   }
 }
