@@ -19,13 +19,17 @@ div.addEventListener('click', e => {
 }, true)
 
 p.addEventListener('click', e => {
-  e.stopPropagation()                // stopped progogation here!
   console.log('parent click capture')
 }, true)
 
 // target listeners
 span.addEventListener('click', e => {
+  e.stopImmediatePropagation()       // stopped propogation immediately here!
   console.log('click capture')
+}, true)
+
+span.addEventListener('click', e => {
+  console.log('click capture 2')
 }, true)
 
 span.addEventListener('click', e => {
