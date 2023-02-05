@@ -19,21 +19,11 @@ class EventInterface {
     if (this.#events[phase][eventName].length === 0) delete this.#events[phase][eventName];
   }
 
-  dispatchEvent(eventName, data, phase = 'bubble') {
-    if (typeof eventName !== "string") return;
-    const stopImmediatePropagation = () => {
-      data.stopPropagation()
-      stop = true
-    }
-
-    // only add this if original event had a stopPropogation method.
-    if(data.stopPropagation) data.stopImmediatePropagation = stopImmediatePropagation
-
-    let stop = false
-    if (this.#events[phase][eventName]) {
-      for(let i = 0; i < this.#events[phase][eventName].length; i++) {
-        if(stop) break
-        this.#events[phase][eventName][i](data)
+  dispatchEvent(event, additionalData = null, phase = 'bubble') {
+    if (this.#events[phase][event.type]) {
+      for(let i = 0; i < this.#events[phase][event.type].length; i++) {
+        if(event.stopImmediately) break
+        this.#events[phase][event.type][i](event)
       }
     }
   }

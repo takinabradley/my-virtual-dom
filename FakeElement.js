@@ -1,4 +1,5 @@
 import EventInterface from './EventInterface.js'
+import DOMEvent from './DOMEvent.js'
 
 class FakeElement extends EventInterface {
   #findElement(elem, tagName) {
@@ -23,14 +24,14 @@ class FakeElement extends EventInterface {
     return list
   }
 
-  #bubble(path, data, abortController) {
+  #bubble(path, event) {
     //dispatch bubble events on each element in path until aborted
     for(let i = 0; i < path.length; i++) {
-      if(abortController.stop) break
+      if(event.stop) break
+      
       path[i].dispatchEvent(
-        data.type, 
+        event, 
         {
-          ...data,
           currentTarget: path[i],
           eventPhase: 3
         }
@@ -38,14 +39,13 @@ class FakeElement extends EventInterface {
     }
   }
 
-  #capture(path, data, abortController) {
+  #capture(path, event) {
     //dispatch capture events on each element in path until aborted
     for(let i = 0; i < path.length; i++) {
-      if(abortController.stop) break
+      if(event.stop) break
       path[i].dispatchEvent(
-        data.type, 
+        event, 
         {
-          ...data,
           currentTarget: path[i],
           eventPhase: 3
         },
@@ -90,41 +90,32 @@ class FakeElement extends EventInterface {
   }
 
   click() {
-    // set up a stopPropogation signal
-    const abortController = {stop: false};
-    const stopPropagation = () => abortController.stop = true
-
-    const eventData = {
-      type: 'click',
-      target: this,
-      stopPropagation
-    }
+    const event = new DOMEvent('click')
+    event.target = this
 
     const [bubblePath, capturePath] = this.#getBubbleAndCapturePaths()
 
     // capture phase
-    this.#capture(capturePath, eventData, abortController)
+    this.#capture(capturePath, event)
 
     // target phase - dispatch capture events first then bubble events. 
     // Don't dispatch them if stopPropogation has been called.
-    if(!abortController.stop) {
-      this.dispatchEvent(eventData.type, {
-        ...eventData,
+    if(!event.stop) {
+      this.dispatchEvent(event, {
         currentTarget: this,
         eventPhase: 2
       }, 'capture');
     }
     
-    if(!abortController.stop) {
-      this.dispatchEvent(eventData.type, {
-        ...eventData,
+    if(!event.stop) {
+      this.dispatchEvent(event, {
         currentTarget: this,
         eventPhase: 2
       });
     }
     
     // bubble phase
-    this.#bubble(bubblePath, eventData, abortController)
+    this.#bubble(bubblePath, event)
   }
 
   querySelector(tagName) {
