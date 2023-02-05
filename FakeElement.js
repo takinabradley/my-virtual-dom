@@ -1,7 +1,6 @@
-import EventInterface from './EventInterface.js'
-import DOMEvent from './DOMEvent.js'
-
-class FakeElement extends EventInterface {
+import {EventNode} from './Nodes.js'
+import DOMEvent from './DOMEvent.js';
+class FakeElement extends EventNode {
   #findElement(elem, tagName) {
     // recursively search an element and it's children for a tag name
     if(elem.tagName === tagName) return elem
@@ -24,52 +23,6 @@ class FakeElement extends EventInterface {
     return list
   }
 
-  #bubble(path, event) {
-    //dispatch bubble events on each element in path until aborted
-    for(let i = 0; i < path.length; i++) {
-      if(event.stop) break
-      
-      path[i].dispatchEvent(
-        event, 
-        {
-          currentTarget: path[i],
-          eventPhase: 3
-        }
-      )
-    }
-  }
-
-  #capture(path, event) {
-    //dispatch capture events on each element in path until aborted
-    for(let i = 0; i < path.length; i++) {
-      if(event.stop) break
-      path[i].dispatchEvent(
-        event, 
-        {
-          currentTarget: path[i],
-          eventPhase: 3
-        },
-        'capture'
-      )
-    }
-  }
-
-  #getPathToHTML(element = this, array = []) {
-    // finds a list of all parent elements until an HTML tag is found
-    if(element === null) return array
-    array.push(element)
-    return this.#getPathToHTML(element.parentElement, array)
-  }
-
-  #getBubbleAndCapturePaths(element = this) {
-    // find paths that events should propogate through
-    const bubblePath = this.#getPathToHTML()
-    bubblePath.splice(0, 1)
-    const capturePath = [...bubblePath].reverse()
-
-    return [bubblePath, capturePath]
-  }
-
   constructor(tagName) {
     // get event functionality
     super()
@@ -83,39 +36,10 @@ class FakeElement extends EventInterface {
   }
 
   // public element methods
-  appendChild(domElement) {
-    domElement.parentElement = this
-    this.children.push(domElement)
-    return domElement
-  }
-
-  click() {
-    const event = new DOMEvent('click')
-    event.target = this
-
-    const [bubblePath, capturePath] = this.#getBubbleAndCapturePaths()
-
-    // capture phase
-    this.#capture(capturePath, event)
-
-    // target phase - dispatch capture events first then bubble events. 
-    // Don't dispatch them if stopPropogation has been called.
-    if(!event.stop) {
-      this.dispatchEvent(event, {
-        currentTarget: this,
-        eventPhase: 2
-      }, 'capture');
-    }
-    
-    if(!event.stop) {
-      this.dispatchEvent(event, {
-        currentTarget: this,
-        eventPhase: 2
-      });
-    }
-    
-    // bubble phase
-    this.#bubble(bubblePath, event)
+  appendChild(child) {
+    super.appendChild(child)
+    child.parentElement = this
+    return child
   }
 
   querySelector(tagName) {
@@ -132,6 +56,11 @@ class FakeElement extends EventInterface {
   getElementsByTagName(tagName) {
     // look at all the children of this element for an element with given tagname
     return this.#findElements(this, tagName.toUpperCase())
+  }
+
+  click() {
+    const event = new DOMEvent('click')
+    this.dispatchEvent(event)
   }
 }
 
