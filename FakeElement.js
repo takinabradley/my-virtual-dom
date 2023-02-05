@@ -61,6 +61,15 @@ class FakeElement extends EventInterface {
     return this.#getPathToHTML(element.parentElement, array)
   }
 
+  #getBubbleAndCapturePaths(element = this) {
+    // find paths that events should propogate through
+    const bubblePath = this.#getPathToHTML()
+    bubblePath.splice(0, 1)
+    const capturePath = [...bubblePath].reverse()
+
+    return [bubblePath, capturePath]
+  }
+
   constructor(tagName) {
     // get event functionality
     super()
@@ -91,10 +100,7 @@ class FakeElement extends EventInterface {
       stopPropagation
     }
 
-    // find paths that events should propogate through
-    const bubblePath = this.#getPathToHTML()
-    bubblePath.splice(0, 1)
-    const capturePath = [...bubblePath].reverse()
+    const [bubblePath, capturePath] = this.#getBubbleAndCapturePaths()
 
     // capture phase
     this.#capture(capturePath, eventData, abortController)
