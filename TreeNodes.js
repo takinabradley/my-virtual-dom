@@ -76,7 +76,7 @@ class TreeEventNode extends TreeNodeWithParent {
     if (this.#events[phase][event.type]) {
       for(let i = 0; i < this.#events[phase][event.type].length; i++) {
         if(event.stopImmediately) break
-        this.#events[phase][event.type][i](event)
+        this.#events[phase][event.type][i].call(this, event)
       }
     }
   }
