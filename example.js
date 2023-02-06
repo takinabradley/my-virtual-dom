@@ -1,3 +1,4 @@
+import DOMEvent from './DOMEvent.js'
 import FakeDocument from './FakeDocument.js'
 
 /* fakeDocument stuff */
@@ -23,9 +24,10 @@ p.addEventListener('click', e => {
 }, true)
 
 // target listeners
-span.addEventListener('click', e => {
+span.addEventListener('click', function(e) {
   e.stopImmediatePropagation()       // stopped propogation immediately here!
   console.log('click capture')
+  console.log("The element tha immediately stopped propogation was", this)
 }, true)
 
 span.addEventListener('click', e => {
@@ -46,3 +48,4 @@ div.removeEventListener('click', divBubbleHandler)
 
 // click 
 span.click()
+span.dispatchEvent(new DOMEvent('click'))
