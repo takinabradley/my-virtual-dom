@@ -32,7 +32,6 @@ class DOMElement extends EventNode {
     this.textContent = ''
     this.style = {}
     this.parentElement = null
-    this.children = []
   }
 
   // public element methods
