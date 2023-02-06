@@ -26,4 +26,16 @@ class DOMEvent {
   }
 }
 
+class CustomDOMEvent extends DOMEvent{
+  constructor(type, options) {
+    super(type, options)
+    if(options && options.detail !== undefined)  {
+      this.detail = options.detail
+    } else {
+      this.detail = null
+    }
+  }
+}
+
 export default DOMEvent
+export {CustomDOMEvent}
