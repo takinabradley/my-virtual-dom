@@ -1,6 +1,6 @@
 import {EventNode} from './TreeNodes.js'
 import DOMEvent from './DOMEvent.js';
-class FakeElement extends EventNode {
+class DOMElement extends EventNode {
   #findElement(elem, tagName) {
     // recursively search an element and it's children for a tag name
     if(elem.tagName === tagName) return elem
@@ -64,4 +64,4 @@ class FakeElement extends EventNode {
   }
 }
 
-export default FakeElement
+export default DOMElement

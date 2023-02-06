@@ -1,16 +1,16 @@
-import FakeElement from './FakeElement.js'
+import DOMElement from './DOMElement.js'
 
 class FakeDocument {
   constructor() {
-    const html = new FakeElement('html')
-    html.appendChild(new FakeElement('head'))
-    html.appendChild(new FakeElement('body'))
+    const html = new DOMElement('html')
+    html.appendChild(new DOMElement('head'))
+    html.appendChild(new DOMElement('body'))
     this.children = [html]
     this.body = html.children[1]
   }
 
   createElement(tagName) {
-    return new FakeElement(tagName)
+    return new DOMElement(tagName)
   }
 
   querySelector(tagName) {
