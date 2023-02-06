@@ -1,12 +1,46 @@
 import DOMElement from './DOMElement.js'
+import { EventNode } from './TreeNodes.js'
 
-class FakeDocument {
+class FakeDocument extends EventNode {
+
+  #findElement(elem, tagName) {
+    // recursively search an element and it's children for a tag name
+    if(elem.tagName === tagName) return elem
+    let elementFound = null;
+    for (let i = 0; i < elem.children.length; i++) {
+      elementFound = this.#findElement(elem.children[i], tagName)
+      if(elementFound) break
+    }
+    return elementFound
+  }
+
+  #findElements(elem, tagName, list = []) {
+    // recursively search through an element's children for a tag name
+    if(elem.children.length === 0) return list
+    
+    for(let i = 0; i < elem.children.length; i++) {
+      if(elem.children[i].tagName === tagName) list.push(elem.children[i])
+      list = [...list, ...this.#findElements(elem.children[i], tagName)]
+    }
+    return list
+  }
+
   constructor() {
-    const html = new DOMElement('html')
-    html.appendChild(new DOMElement('head'))
-    html.appendChild(new DOMElement('body'))
-    this.children = [html]
-    this.body = html.children[1]
+    super()
+    const htmlElement = new DOMElement('html')
+    const headElement = new DOMElement('head')
+    const bodyElement = new DOMElement('body')
+    htmlElement.appendChild(headElement)
+    htmlElement.appendChild(bodyElement)
+    this.appendChild(htmlElement)
+    this.body = bodyElement
+  }
+
+  appendChild(child) {
+    if(this.children.length > 0) throw new Error("Only one element on document is allowed")
+    super.appendChild(child)
+    child.parentElement = null;
+    return child
   }
 
   createElement(tagName) {
@@ -14,20 +48,20 @@ class FakeDocument {
   }
 
   querySelector(tagName) {
-    //query from html - html tag including
-    if(tagName.toUpperCase() === 'HTML') return this.children[0]
-    return this.children[0].querySelector(tagName)
+    // look at all the children of this element, but not the element itself
+    tagName = tagName.toUpperCase()
+    let elementFound = null
+    for(let i = 0; i < this.children.length; i++) {
+      elementFound = this.#findElement(this.children[i], tagName)
+      if(elementFound) break
+    }
+    return elementFound
   }
 
   getElementsByTagName(tagName) {
-    // query from html - html tag including
-    if(tagName.toUpperCase() === 'HTML') {
-      return [this.children[0], ...this.children[0].getElementsByTagName(tagName)]
-    } else {
-      return this.children[0].getElementsByTagName(tagName)
-    }
+    // look at all the children of this element for an element with given tagname
+    return this.#findElements(this, tagName.toUpperCase())
   }
-
 }
 
 export default FakeDocument
