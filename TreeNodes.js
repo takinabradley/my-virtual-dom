@@ -1,4 +1,4 @@
-class Node {
+class TreeNode {
   constructor() {
     this.children = []
   }
@@ -9,22 +9,20 @@ class Node {
   }
 }
 
-class NodeWithParent extends Node {
+class TreeNodeWithParent extends TreeNode {
   constructor() {
     super()
     this.parentNode = null
   }
 
   appendChild(child) {
+    super.appendChild(child)
     child.parentNode = this
-    this.children.push(child)
     return child
   }
 }
 
-
-
-class EventNode extends NodeWithParent {
+class TreeEventNode extends TreeNodeWithParent {
   #events = {
     capture: {},
     bubble: {},
@@ -136,4 +134,8 @@ class EventNode extends NodeWithParent {
   }
 }
 
-export {Node, NodeWithParent, EventNode}
+export {
+  TreeNode as Node, 
+  TreeNodeWithParent as NodeWithParent, 
+  TreeEventNode as EventNode
+}

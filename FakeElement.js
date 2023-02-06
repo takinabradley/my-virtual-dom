@@ -1,4 +1,4 @@
-import {EventNode} from './Nodes.js'
+import {EventNode} from './TreeNodes.js'
 import DOMEvent from './DOMEvent.js';
 class FakeElement extends EventNode {
   #findElement(elem, tagName) {
