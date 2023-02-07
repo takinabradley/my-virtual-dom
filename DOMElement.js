@@ -1,5 +1,21 @@
 import {EventNode} from './TreeNodes.js'
 import DOMEvent from './DOMEvent.js';
+const defaultActions = {
+  INPUT: {
+    keydown: [
+      function setInputValue(elem, data) {
+        elem.value += data.key; 
+        elem.textContent = elem.value
+      },
+    ]
+  }
+}
+
+const defaultProps = {
+  INPUT: {
+    value: '',
+  }
+}
 class DOMElement extends EventNode {
   #findElement(elem, tagName) {
     // recursively search an element and it's children for a tag name
@@ -28,10 +44,16 @@ class DOMElement extends EventNode {
     super()
     this.children = []
     // set element props
-    this.tagName = tagName ? tagName.toUpperCase() : undefined
+    this.tagName = tagName
     this.textContent = ''
     this.style = {}
     this.parentElement = null
+
+    if(defaultProps[tagName]) {
+      for(const key in defaultProps[tagName]) {
+        this[key] = defaultProps[tagName][key]
+      }
+    }
   }
 
   // public element methods
@@ -60,6 +82,15 @@ class DOMElement extends EventNode {
 
   click() {
     const event = new DOMEvent('click')
+    this.dispatchEvent(event)
+  }
+
+  keyDown(key) {
+    const event = new DOMEvent('keydown')
+    if(defaultActions[this.tagName][event.type]) {
+      defaultActions[this.tagName][event.type].forEach(fn => fn(this, {key}))
+    }
+    
     this.dispatchEvent(event)
   }
 }
