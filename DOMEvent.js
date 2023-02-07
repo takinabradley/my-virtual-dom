@@ -3,10 +3,14 @@ class DOMEvent {
   #stopImmediately = false
   #bubbles = false
   #cancelable = false
+  #type = null
 
   constructor(type, options) {
-    this.type = type
+    if(arguments.length < 1) throw new TypeError("Failed to construct 'DOMEvent': 1 argument required, but only 0 present.")
+    this.#type = type
     this.target = null
+    this.currentTarget = null
+    this.eventPhase = 0
 
     if(options) {
       if(options.bubbles === true) this.#bubbles = true
@@ -18,6 +22,7 @@ class DOMEvent {
   get stopImmediately() {return this.#stopImmediately}
   get bubbles() {return this.#bubbles}
   get cancelable() {return this.#cancelable}
+  get type() {return this.#type}
 
   stopPropagation() {this.#stop = true}
   stopImmediatePropagation() {
@@ -27,14 +32,19 @@ class DOMEvent {
 }
 
 class CustomDOMEvent extends DOMEvent{
+  #detail = null;
   constructor(type, options) {
+    if(arguments.length < 1) throw new TypeError("Failed to construct 'CustomDOMEvent': 1 argument required, but only 0 present.")
     super(type, options)
     if(options && options.detail !== undefined)  {
-      this.detail = options.detail
+      this.#detail = options.detail
     } else {
-      this.detail = null
+      this.#detail = null
     }
   }
+
+  get detail() {return this.#detail}
+  set detail(value) {/* don't allow, but don't throw error */}
 }
 
 export default DOMEvent

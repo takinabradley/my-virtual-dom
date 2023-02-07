@@ -29,32 +29,22 @@ class TreeEventNode extends TreeNodeWithParent {
   }
 
   #bubble(path, event) {
+    event.eventPhase = 3
     //dispatch bubble events on each element in path until aborted
     for(let i = 0; i < path.length; i++) {
       if(event.stop) break
-      
-      path[i].#triggerEvent(
-        event, 
-        {
-          currentTarget: path[i],
-          eventPhase: 3
-        }
-      )
+      event.currentTarget = path[i]
+      path[i].#triggerEvent(event)
     }
   }
 
   #capture(path, event) {
     //dispatch capture events on each element in path until aborted
+    event.eventPhase = 1
     for(let i = 0; i < path.length; i++) {
       if(event.stop) break
-      path[i].#triggerEvent(
-        event, 
-        {
-          currentTarget: path[i],
-          eventPhase: 3
-        },
-        'capture'
-      )
+      event.currentTarget = path[i]
+      path[i].#triggerEvent(event, 'capture')
     }
   }
 
@@ -72,7 +62,7 @@ class TreeEventNode extends TreeNodeWithParent {
     return [bubblePath, capturePath]
   }
 
-  #triggerEvent(event, additionalData = null, phase = 'bubble') {
+  #triggerEvent(event, phase = 'bubble') {
     if (this.#events[phase][event.type]) {
       for(let i = 0; i < this.#events[phase][event.type].length; i++) {
         if(event.stopImmediately) break
@@ -115,22 +105,22 @@ class TreeEventNode extends TreeNodeWithParent {
 
     // target phase - dispatch capture events first then bubble events. 
     // Don't dispatch them if stopPropogation has been called.
+    event.currentTarget = this
+    event.eventPhase = 2
     if(!event.stop) {
-      this.#triggerEvent(event, {
-        currentTarget: this,
-        eventPhase: 2
-      }, 'capture');
+      this.#triggerEvent(event, 'capture');
     }
     
     if(!event.stop) {
-      this.#triggerEvent(event, {
-        currentTarget: this,
-        eventPhase: 2
-      });
+      this.#triggerEvent(event);
     }
     
     // bubble phase
     this.#bubble(bubblePath, event)
+
+    // after the event is over, set these.
+    event.eventPhase = 0
+    event.currentTarget = null
   }
 }
 
