@@ -47,7 +47,13 @@ class FakeDocument extends EventNode {
   }
 
   createElement(tagName) {
-    return new DOMElement(tagName)
+    const badName = new DOMException(
+      `Failed to execute 'createElement' on 'fakeDocument': The tag name provided\('${tagName}') is not a valid name.`
+    )
+    if(typeof tagName !== 'string') throw badName
+    if(tagName.length < 1) throw badName
+    if(tagName.includes(' ')) throw badName
+    return new DOMElement(tagName.toUpperCase())
   }
 
   querySelector(tagName) {
