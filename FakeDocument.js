@@ -27,6 +27,8 @@ class FakeDocument extends EventNode {
 
   constructor() {
     super()
+    this.children = []
+    this.parentElement = null
     const htmlElement = new DOMElement('html')
     const headElement = new DOMElement('head')
     const bodyElement = new DOMElement('body')
@@ -40,6 +42,7 @@ class FakeDocument extends EventNode {
     if(this.children.length > 0) throw new Error("Only one element on document is allowed")
     super.appendChild(child)
     child.parentElement = null;
+    this.children.push(child)
     return child
   }
 

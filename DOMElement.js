@@ -26,7 +26,7 @@ class DOMElement extends EventNode {
   constructor(tagName) {
     // get event functionality
     super()
-
+    this.children = []
     // set element props
     this.tagName = tagName ? tagName.toUpperCase() : undefined
     this.textContent = ''
@@ -38,6 +38,7 @@ class DOMElement extends EventNode {
   appendChild(child) {
     super.appendChild(child)
     child.parentElement = this
+    this.children.push(child)
     return child
   }
 

@@ -1,10 +1,10 @@
 class TreeNode {
   constructor() {
-    this.children = []
+    this.childNodes = []
   }
 
   appendChild(child) {
-    this.children.push(child)
+    this.childNodes.push(child)
     return child
   }
 }
