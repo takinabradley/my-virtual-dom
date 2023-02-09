@@ -39,6 +39,12 @@ class DOMElement extends EventNode {
     return list
   }
 
+  #triggerDefaultAction(event, data) {
+    if(defaultActions[this.tagName][event.type] && !event.defaultPrevented) {
+      defaultActions[this.tagName][event.type].forEach(fn => fn(this, data))
+    }
+  }
+
   constructor(tagName) {
     // get event functionality
     super()
@@ -87,11 +93,9 @@ class DOMElement extends EventNode {
 
   keyDown(key) {
     const event = new DOMEvent('keydown')
-    if(defaultActions[this.tagName][event.type]) {
-      defaultActions[this.tagName][event.type].forEach(fn => fn(this, {key}))
-    }
-    
     this.dispatchEvent(event)
+
+    this.#triggerDefaultAction(event, {key})
   }
 }
 

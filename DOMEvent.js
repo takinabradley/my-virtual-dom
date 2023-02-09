@@ -4,6 +4,7 @@ class DOMEvent {
   #bubbles = false
   #cancelable = false
   #type = null
+  #defaultPrevented = false
 
   constructor(type, options) {
     if(arguments.length < 1) throw new TypeError("Failed to construct 'DOMEvent': 1 argument required, but only 0 present.")
@@ -23,11 +24,15 @@ class DOMEvent {
   get bubbles() {return this.#bubbles}
   get cancelable() {return this.#cancelable}
   get type() {return this.#type}
+  get defaultPrevented() {return this.#defaultPrevented}
 
   stopPropagation() {this.#stop = true}
   stopImmediatePropagation() {
     this.#stop = true
     this.#stopImmediately = true
+  }
+  preventDefault() {
+    this.#defaultPrevented = true
   }
 }
 
